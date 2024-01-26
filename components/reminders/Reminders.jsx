@@ -49,7 +49,7 @@ const Reminders = () => {
           renderItem={({item}) => (<Item item = {item} handlePress = {() => {
             setHashObj(item);
             setModalVisible(true)}}/>)}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.title}
         />
       ):<Text></Text>}
     </View>
@@ -68,10 +68,10 @@ export {Reminders};
 //Event JSON Object associated with the key is: 
 // {
 // hashCode:
-// key:
+// ids:
 // title:
 // description:
-// days: 'M,T,W'
+// days: '1,2,3,4'
 // time: 
 // }
 //fetch keys from storage and then render a list of title time pairs. Onclick function is a popup which takes argument, the event id. Popup will display all the info using textInput.

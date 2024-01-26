@@ -3,12 +3,27 @@ import {Text, Button,Pressable, View, ScrollView, TextInput,FlatList, TouchableO
 import { saveEvent } from "../../hook/saveEvent";
 import {styles} from './modal.styles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import RNCalendarEvents from "react-native-calendar-events";
+import { storage } from '../../hook/useStore';
+import 'react-native-get-random-values';
+import {v4 as uuid} from 'uuid';
 
 //Fill the modal with data collecting options.
 const week = ['M','T','W','T','F','S','S'];
 
+const Delete = (hashObj) => {
+  for(let eventId of hashObj.ids.split(',')) RNCalendarEvents.removeEvent(eventId);
+  storage.delete(hashObj.hashCode);
+  let hashes = storage.getString('hashes');
+  hashes = hashes.split(',');
+  hashes.splice(hashes.indexOf(hashObj.hashCode),1)
+  hashes = hashes.join(',');
+  if(hashes != "") storage.set('hashes',hashes);
+  else storage.delete('hashes');
+}
+
 const Day = ({index,days,setDays}) => {
-  const [selected,setSelected] = useState(false);
+  const [selected,setSelected] = useState((days.indexOf(index) != -1));
   return (
     <TouchableOpacity style = {[styles.button,{backgroundColor:(!selected)?'white':'#2196F3'}]} onPress={()=> {
       if(!selected) days.push(index);
@@ -24,11 +39,11 @@ const Day = ({index,days,setDays}) => {
 
 const Popup = ({setModalVisible,onSave,hashObj}) => {
   
-  const [days,setDays] = useState(hashObj?hashObj.days.split(','):[]);
+  const [days,setDays] = useState(hashObj?((hashObj.days).split(',')).map((item) => (parseInt(item))):[]);
   const [text,onChangeText] = useState(hashObj?hashObj.title:'');
   const [descriptionText,setDescriptionText] = useState(hashObj?hashObj.description:'')
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [time,setTime] = useState(hashObj?hashObj.time:(new Date()));  
+  const [time,setTime] = useState(hashObj?new Date(hashObj.time):(new Date()));  
   const [height, setHeight] = useState(0);
  
   return (
@@ -55,9 +70,10 @@ const Popup = ({setModalVisible,onSave,hashObj}) => {
                 isVisible={isDatePickerVisible}
                 mode="time"
                 onConfirm={(date) => {
-                  console.warn('time picked is ' + date.toISOString());
+                  
                   setDatePickerVisibility(false);
                   const realTime = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours() + 5,date.getMinutes() + 30, date.getSeconds())
+                  console.warn('time picked is ' + realTime.toISOString());
                   setTime(realTime);
                   
               }}
@@ -90,6 +106,17 @@ const Popup = ({setModalVisible,onSave,hashObj}) => {
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => {
                   //refill hashObj by collecting data from the modal before sending it to be saved.
+                  if(hashObj != null) {
+                    Delete(hashObj);
+                  }
+                  hashObj = {
+                    ids:"",
+                    title:text,
+                    time:time,
+                    days:days,
+                    description:descriptionText,
+                    hashCode:uuid(),
+                  }
                   saveEvent(hashObj).then( () => {
                     onSave();
                     setModalVisible(false);
@@ -101,7 +128,10 @@ const Popup = ({setModalVisible,onSave,hashObj}) => {
         //onPress will call a delete hook first.
         hashObj?(<TouchableOpacity
         style={[styles.button, styles.buttonClose]}
-        onPress={() => setModalVisible(false)}>
+        onPress={() => {
+          Delete(hashObj);
+          onSave();
+          setModalVisible(false)}}>
         <Text style={styles.textStyle}>Delete</Text>
 </TouchableOpacity>):(<Text></Text>)
       }
@@ -118,3 +148,7 @@ const Popup = ({setModalVisible,onSave,hashObj}) => {
 
 
 export {Popup};
+
+
+
+//difference between creating and editing an existing event. For editing the events, all the existing events will need to be deleted first. And then, the hashCode of the current hashObj has to be removed from memory. Now, a hashObj with all the necessary information will be passed into the saveEvent function. It will be missing a hashCode however. Which can be generated and added in later.
