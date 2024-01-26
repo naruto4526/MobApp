@@ -1,9 +1,11 @@
 import RNCalendarEvents from "react-native-calendar-events";
 import { storage } from "./useStore";
+import 'react-native-get-random-values';
+import {v4 as uuid} from 'uuid';
 
 //called from the popup. It takes id argument in case of updating an event, id is null in case of new event
 
-const saveEvent = async (time, title, description,id) => {
+const saveEvent = async (hashObj) => {
   let val;
   try {
     val = await RNCalendarEvents.checkPermissions((readOnly = false))
@@ -14,41 +16,58 @@ const saveEvent = async (time, title, description,id) => {
 
       let date = new Date();
       let startDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes() + 2, date.getSeconds(),date.getMilliseconds());
+
       let endDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours() + 1,date.getMinutes() +2, date.getSeconds(),date.getMilliseconds());
       console.log(startDate.toString());
 
       //possible problems are recurrence, start and end time
-      let newEventId = await RNCalendarEvents.saveEvent(title,
-      {
-        alarms:[{date:startDate.toISOString()}],
-        calendarId:'5',
-        startDate:time,
-        endDate: time,
-        description:description,
-        recurrence:"daily"
-      }
-      );
-
-      console.log(newEventId);
-     
-      let eventKeys = storage.getBuffer("keys");
-      eventKeys.push(newEventId);
-      storage.set("keys",eventKeys);
+      //when no hashcode provided, new event is created
       
-      const jsonEvent = {
-        title:title,
-        time:time,
+      if(hashObj == null) {
+
+        let newEventId = await RNCalendarEvents.saveEvent('pls',
+        {
+          alarms:[{"date":startDate.toISOString()}],
+          calendarId:'5',
+          startDate:startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          description:'Is this what life is?',
+  
+        }
+        );
+        console.log("New event created" + ":" + newEventId);
+        let hashCode = uuid();
+        let eventHashes = storage.getString('hashes');
+        if(eventHashes == null) eventHashes = hashCode;
+        else eventHashes += "," + hashCode;
+
+        storage.set('hashes',eventHashes);
+        
+        const jsonEvent = {
+          hashCode:hashCode,
+          ids:newEventId,
+          title: 'This should ring',
+          description:'Hello there',
+          days:'',
+          time:startDate.getTime(),
+        }
+        storage.set(hashCode,JSON.stringify(jsonEvent));
       }
-      storage.set( String.valueOf(newEventId),jsonEvent);
+      //Old event is edited.
+      else {
+        let eventObj = hashObj;
+        let events = eventObj.ids.split(',');
+        for(let event of events) RNCalendarEvents.removeEvent(event);
+        storage.delete(hashObj.hashCode);
+        //create new events. One event for each day of the week.
+
+      }
     }
   }
   catch(err) {
     console.log(err);
   }
-  finally {
-    console.log("button works");
-    console.log(val);
-  }
+
 }
 
 export {saveEvent};

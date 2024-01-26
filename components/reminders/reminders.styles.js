@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
     fontSize:SIZES.medium,
     color:COLORS.white,
     fontFamily:'monospace'
-  }
+  },
+  
 
 })
 
