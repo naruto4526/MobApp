@@ -16,6 +16,7 @@
     "react": "18.2.0",
     "react-native": "0.73.2",
     "react-native-calendar-events": "^2.2.0",
+    "react-native-calendars": "^1.1303.0",
     "react-native-get-random-values": "^1.10.0",
     "react-native-mmkv": "^2.11.0",
     "react-native-modal-datetime-picker": "^17.1.0",

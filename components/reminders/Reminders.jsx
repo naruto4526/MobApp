@@ -1,8 +1,8 @@
 import React,{useEffect, useState} from "react";
-import {Alert,Modal,Pressable,View,Text,TouchableOpacity, Button, FlatList} from 'react-native';
+import {View,Text,TouchableOpacity, Button, FlatList} from 'react-native';
 import { storage } from "../../hook/useStore";
-import { Popup } from "./modal";
 import { styles } from "./reminders.styles";
+import { useIsFocused } from '@react-navigation/native';
 
 const Item = ({item,handlePress}) => {
   return (
@@ -16,10 +16,8 @@ const Item = ({item,handlePress}) => {
 
 const Reminders = ({navigation}) => {
   const [data,setData] = useState(0);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalOpened,setModalOpened] = useState(0);
-  const [hashObj,setHashObj] = useState(null);
-
+  const isFocused = useIsFocused();
+  
   useEffect( () => {
     let data = storage.getString('hashes'); 
     if(data != null) {
@@ -27,38 +25,31 @@ const Reminders = ({navigation}) => {
       data = data.map(item => JSON.parse(storage.getString(item)));
     }
     setData(data);
-  },[modalOpened]);
+  },[isFocused]);
   
   return(
-   <View style = {{flex:1}}>
-    <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-
-          <Popup setModalVisible={setModalVisible}  onSave = {() => {setModalOpened(modalOpened + 1)}} hashObj = {hashObj}/>
-
-    </Modal>
+  <View style = {{flex:1}}>
     <View style = {{flex:10}}>
-      {(!modalVisible) && data != null?(
+      {data != null?(
         <FlatList
           data = {data}
           renderItem={({item}) => (<Item item = {item} handlePress = {() => {
-            setHashObj(item);
-            setModalVisible(true)}}/>)}
+            navigation.navigate('NewReminder', {
+              hashObj : item,
+            })
+          }}/>)}
           keyExtractor={(item) => item.title}
         />
       ):<Text></Text>}
     </View>
-    {(!modalVisible)?(<View style = {{flex:2,alignItems:'center',justifyContent:'center'}}>
+    <View style = {{flex:2,alignItems:'center',justifyContent:'center'}}>
         <Button onPress={() => {
-          setHashObj(null);
-          setModalVisible(true)}} title="Add" />
-    </View>):(<Text></Text>)}
-   </View>
+          navigation.navigate('NewReminder', {
+            hashObj : null,
+          })
+          }} title="Add" />
+    </View>
+  </View>
   )
 }
 

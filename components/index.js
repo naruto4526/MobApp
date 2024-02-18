@@ -5,3 +5,4 @@ export {Display} from './display/Display.jsx';
 export {Reminders} from './reminders/Reminders.jsx';
 export {Symptoms} from './symptoms/Symptoms.jsx';
 export {StepCount} from './stepCount/StepCount.jsx';
+export {NewReminder} from './reminders/newReminder/NewReminder.jsx'

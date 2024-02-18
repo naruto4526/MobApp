@@ -3,15 +3,14 @@ import { COLORS,FONTS,SIZES,SHADOWS } from "../../constants";
 
 const styles = StyleSheet.create({
   centeredView: {
-    alignItems: 'center',
-    marginTop: 70,
+    marginTop: 10,
   },
   modalView: {
+    flex:1,
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 15,
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -20,6 +19,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  medication: {
+    flex:1,
+    margin:-15,
+    borderRadius:20,
+    padding:15,
+    borderBottomRightRadius:0,
+    borderBottomLeftRadius:0,
+    backgroundColor:'#2196F3',
   },
   button: {
     margin:5,
