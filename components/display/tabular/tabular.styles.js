@@ -4,45 +4,30 @@ import { COLORS,SIZES,SHADOWS } from "../../../constants";
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    margin:SIZES.small/4,
+    margin:0,
+    marginLeft:-14,
+    marginRight:-14,
     flexDirection:'row',
     alignContent: 'center',
+
   },
-  textContainer: {
-    margin:SIZES.small/5,
-    padding:2,
-    ...SHADOWS.medium,
-    shadowColor: COLORS.white,
-  },
-  textVal: {
-    fontSize:SIZES.large,
+  textContainer: (type) => ({
+    padding:5,
+    borderColor:COLORS.gray2,
+    marginTop:SIZES.xxLarge/1.5,
+    marginBottom:SIZES.xxLarge/1.5,
+    backgroundColor: (type !=="value")?COLORS.primary:'white',
+    borderRadius:SIZES.xSmall/4,
+  }),
+  textVal: (type) => ({
+    fontSize:SIZES.medium,
+    textAlign:'center',
     padding:2,
     paddingTop:5,
     //font family
-    color:"#29294d",
-  },
-  rowContainer: {
-    flex:1,
-    flexDirection:'row',
-    justifyContent:'space-between',
-    margin:SIZES.xSmall,
-    marginBottom:SIZES.xLarge,
-  },
-  paramContainer: {
-    padding:SIZES.small,
-    backgroundColor:COLORS.primary,
-    flexDirection:'row',
-    borderRadius:SIZES.small/4,
-    ...SHADOWS.medium,
-    shadowColor: COLORS.white,
-    justifyContent:'center',
-    marginRight:SIZES.small/2,
-  },
-  paramText: {
-    fontFamily: "monospace",
-    fontSize: SIZES.medium,
-    color: "#C3BFCC",
-  },
+    color:(type !== "value")? COLORS.white: COLORS.primary,
+
+  }),
   column:{
     flex:1,
     margin:SIZES.xSmall,

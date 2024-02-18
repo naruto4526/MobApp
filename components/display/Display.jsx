@@ -49,7 +49,7 @@ const Display = ({data,refetch}) => {
       </View>
 
       <View style = {{flex:13,backgroundColor:COLORS.primary,marginTop:-3, borderRadius:16}}>
-        <ScrollView style ={{margin:10,backgroundColor:'white',borderRadius:10,}}>
+        <ScrollView style ={{margin:10,backgroundColor:COLORS.white,borderRadius:10,}}>
           {loading?(<View style = {{marginTop:300}}>
             <ActivityIndicator size = "large" colors = {COLORS.primary}/>
             </View>)

@@ -14,7 +14,7 @@ const Item = ({item,handlePress}) => {
   );
 };
 
-const Reminders = () => {
+const Reminders = ({navigation}) => {
   const [data,setData] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalOpened,setModalOpened] = useState(0);

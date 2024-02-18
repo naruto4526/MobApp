@@ -24,6 +24,7 @@ function App() {
         <Stack.Screen name="Track Symptoms" component={Symptoms}/>
         <Stack.Screen name="Step Count" component={StepCount}/>
         <Stack.Screen name="Details" component={DetailsScreen} />
+        <Stack.Screen name="NewReminder" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

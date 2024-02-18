@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Text, Button,Pressable, View, ScrollView, TextInput,FlatList, TouchableOpacity} from 'react-native';
+import {Text, Button, View, TextInput,TouchableOpacity} from 'react-native';
 import { saveEvent } from "../../hook/saveEvent";
 import {styles} from './modal.styles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -118,8 +118,8 @@ const Popup = ({setModalVisible,onSave,hashObj}) => {
                     hashCode:uuid(),
                   }
                   saveEvent(hashObj).then( () => {
-                    onSave();
-                    setModalVisible(false);
+                    onSave();  //for updating the list on reminders view
+                    setModalVisible(false);  //for returnin to the reminders view
                   })
                   }}>
                 <Text style={styles.textStyle}>Save</Text>
