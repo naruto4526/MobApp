@@ -42,16 +42,58 @@ const Elem = ({entry,units}) => {
 };
 
 
+const Column = ({data, type}) => {
+  return (
+  <View style = {styles.column}>
+    {data.map( (item,index) => 
+      (<Text style = {{textAlign:'center'}} key = {index}>{item}</Text>)
+    )}
+  </View>
+  );
+}
+
+
+
+
 const Tabular = ({data}) => {
-  return(
-    <View style = {styles.container}>
-      {Object.entries(data).map((entry,index) => {
-       
-        return (<Elem entry = {[...entry]} key = {index} units = {entry[1].at(-1)}/>)
-      })
+
+  let Data = Object.entries(data);
+  let usefulData = [];
+  let temp = [];
+  for(let arr of Data) temp.push(arr[0]);
+  usefulData.push(temp);
+  let index = 0;
+  while(index < Data[0][1].length) {
+    let temp = [];
+    for(let arr of Data) {
+      if(index < arr[1].length) temp.push(arr[1][index]);
     }
+    index++;
+    usefulData.push(temp);
+  }
+  //console.log(usefulData);
+
+
+  return (
+    <View style = {styles.container}>
+      <View style = {{flex:1}}>
+        <Column data = {usefulData[0]} type = "title" />
+      </View>
+      <View style = {{flex:3}}>
+        <FlatList
+          horizontal = {true}
+          data = {usefulData.slice(1,-1)}
+          renderItem = {({item})=> (<Column data = {item} type = "value" />)}
+          inverted = {true}
+          keyExtractor={({item,index}) => (index)}
+        />
+      </View>
+      <View style = {{flex:1}}>
+      <Column data = {usefulData.at(-1)} type = "title" />
+      </View>
     </View>
   );
+
 };
 
 export {Tabular};

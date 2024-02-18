@@ -4,8 +4,9 @@ import { COLORS,SIZES,SHADOWS } from "../../../constants";
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    margin:SIZES.small/8,
-    justifyContent:'center',
+    margin:SIZES.small/4,
+    flexDirection:'row',
+    alignContent: 'center',
   },
   textContainer: {
     margin:SIZES.small/5,
@@ -41,8 +42,12 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     fontSize: SIZES.medium,
     color: "#C3BFCC",
-  }
- 
+  },
+  column:{
+    flex:1,
+    margin:SIZES.xSmall,
+    marginBottom:SIZES.xLarge,
+  },
 
 });
 

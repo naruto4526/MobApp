@@ -10,7 +10,7 @@ const displayContent = (activeTab,data) => {
     case 'Tabular':
       return (<Tabular data = {data}/>);
     case 'Graphical':
-      return (<Graphical data = {data}/>)
+      return (<Graphical data = {data}/>);
   }
 }
 
@@ -33,23 +33,27 @@ const Display = ({data,refetch}) => {
             <Text style = {styles.btnText('Graphical',activeTab)}>Graphical</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style = {styles.btn('Refresh',activeTab)} onPress={() => {
+            setLoading(true);
+            refetch().then(movies => {
+              setData(movies);
+              setLoading(false);
+            })
+          }}>
+            <Text>Ref</Text>
+          </TouchableOpacity>
+
         </View>
 
-        <TouchableOpacity style ={{flex:1}} onPress={() => {
-          setLoading(true);
-          refetch().then(movies => {
-            setData(movies);
-            setLoading(false);
-          })
-        }}>
-          <Text>Ref</Text>
-        </TouchableOpacity>
+        
       </View>
 
       <View style = {{flex:13,backgroundColor:COLORS.primary,marginTop:-3, borderRadius:16}}>
-        <ScrollView style ={{flex:1,margin:10,backgroundColor:'white',borderRadius:10}}>
-          {loading?(<View style = {{marginTop:300}}><ActivityIndicator size = "large" colors = {COLORS.primary}/></View>)
-      :displayContent(activeTab,Data)}
+        <ScrollView style ={{margin:10,backgroundColor:'white',borderRadius:10,}}>
+          {loading?(<View style = {{marginTop:300}}>
+            <ActivityIndicator size = "large" colors = {COLORS.primary}/>
+            </View>)
+            :displayContent(activeTab,Data)}
         </ScrollView>
       </View>
       
