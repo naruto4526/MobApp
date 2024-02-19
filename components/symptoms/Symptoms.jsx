@@ -1,68 +1,84 @@
-import {View,Text,FlatList,ScrollView} from 'react-native';
+import {Alert, Modal, Button, StyleSheet,View,Text,FlatList,ScrollView} from 'react-native';
 import React, {useState,useEffect} from 'react';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import { storage } from "../../hook/useStore";
 import { useIsFocused } from '@react-navigation/native';
 import { styles } from './symptoms.style';
+import {Meds,VitalDetail,SymptomDetail}from '..';
+import { SympModal } from './Modals/sympModal';
 
-const SymptomTemplate = () => {
-  return (
-    <Text>Hello there</Text>
-  );
-};
 
-const Symptoms = () => {
+const Symptoms = ({navigation}) => {
   let date = new Date();
-  console.log(date.toUTCString() + ',' + date.getMonth());
   let dateString = (date.getFullYear()) + '-' + '0' + (date.getMonth() + 1) + '-' + date.getDate() ;
-  const [data,setData] = useState(null);
+  const [sympObj,setSympObj] = useState(null);
   const [selected, setSelected] = useState(dateString);
+  const [sympModalVisible, setSympModalVisible] = useState(false);
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    //get data from local storage.
+    //get dates with info and check if current date has entries
     let dates = storage.getString('dates');
-    if(dates && dates.includes(selected)) setData(storage.getString(selected));
+    if(dates && dates.includes(selected)) {
+      setSympObj(JSON.parse(storage.getString(selected)));
+    }
 
   }, [isFocused])
 
   return (
-    <ScrollView>
+
+    <View>
       <Calendar
-      onDayPress={day => {
-        setSelected(day.dateString);
-      }}
-      markedDates={{
-        [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'}
-      }}
-      maxDate = {dateString}
-      />
-      <View>
-        {
-        //vitals here if available
-      }
+        onDayPress={day => {
+          setSelected(day.dateString);
+        }}
+        markedDates={{
+          [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'}
+        }}
+        maxDate = {dateString}
+        />
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={sympModalVisible}
+        onRequestClose={() => {
+          setSympModalVisible(!sympModalVisible);
+        }}>
+          <SympModal setSympModalVisible = {setSympModalVisible} sympObj={sympObj} navigation={navigation}/>
+      </Modal>
+      <ScrollView>
+        
         <View>
           {
-            //use a map to put out all of the symptoms.
-          }
+          //vitals here if available
+        }
+          <VitalDetail/>
+          <View>
+            {
+              //use a .map to put out all of the symptoms.
+            }
+            <SymptomDetail/>
+            <Button onPress = {() => setSympModalVisible(true)} title='Show Modal'/>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 export {Symptoms};
 
 //What do I need to do?
-//  1. Disable future dates on calendar
-//  2. ScrollView for the whole thing.
-//  3. Add symptom modal
+//  1. Understand and get modals in the symptom view.
+//  2. Design the add symptom modal.  
 //      => Symptom
 //        => Severity
 //        => Medications to choose from along with add medication option which takes you newReminder page
 //        => Medication effictevess slider
 //        => Notes
-//  4. Record Vitals button on the left. This will insert the vitals at the top.
+//  3. Save symptom feature and read it on the symptoms page.
+//  4. Symptom lists.
+//  5. Record Vitals button on the left. This will insert the vitals at the top.
 //
 
 

@@ -133,7 +133,8 @@ const NewReminder = ({route,navigation}) => {
             navigation.goBack();
             }}>
           <Text style={styles.textStyle}>Delete</Text>
-          </TouchableOpacity>):(<Text></Text>)
+          </TouchableOpacity>)
+          :(<Text></Text>)
         }
         <TouchableOpacity
                   style={[styles.button, styles.buttonClose]}
