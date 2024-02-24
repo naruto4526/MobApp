@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     textAlign: 'center',
   },
-
 })
 
 export {styles};

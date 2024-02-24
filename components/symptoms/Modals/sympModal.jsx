@@ -8,28 +8,103 @@ import Slider from '@react-native-community/slider';
 import { Meds } from '../details/Details.jsx';
 import { useIsFocused } from '@react-navigation/native';
 
-
+//changed the object structure again. Look into all functions that fetches object from storage.
 //Fill the modal with data collecting options.
-const Delete = () => {
-  //delete sympObj here.
+const Delete = (selected, symptom) => {
+  let dateObj = JSON.parse(storage.getString(selected));
+  let sympObjList = dateObj.sympObjList;
+  sympObjList = sympObjList.filter((obj) => obj.symptom !== symptom);
+  dateObj.sympObjList = sympObjList;
+  if(sympObjList.length > 0 )storage.set(selected,JSON.stringify(dateObj));
+  else {
+    let dates = storage.getString('dates');
+    dates = dates.split(',');
+    dates = dates.splice(dates.indexOf(selected), 1);
+    dates = dates.join(',');
+    if(dates) storage.set('dates', dates);
+    storage.delete(selected);
+  }
 }
 
-const SympModal = ({sympObj,setSympModalVisible, navigation}) => {
-  let sympSeverity = sympObj?.sympSeverity??0;
-  const [text,onChangeText] = useState(sympObj?sympObj.title:'');
+const save = (sympObj) => {
+  let dateObj = storage.getString(sympObj.date);
+  if(dateObj) {
+    dateObj = JSON.parse(dateObj);
+    dateObj.sympObjList.push(sympObj);
+  }
+  else {
+    dateObj = {
+      sympObjList : [sympObj]
+    }
+    let dates = storage.getString('dates');
+    if(!dates) dates = sympObj.date
+    else dates += ',' + sympObj.date;
+    storage.set('dates',dates);
+  }
+  storage.set(sympObj.date, JSON.stringify(dateObj));
+}
+const CustomSlider = ({selectedMed,selectedMap,setSelectedMap}) => {
+  return (
+    <Slider
+      style={{width: 250, height: 40,}}
+      minimumValue={0}
+      maximumValue={10}
+      minimumTrackTintColor="#2196F3"
+      maximumTrackTintColor="#023e9e"
+      step = {1}
+      thumbTintColor='#70c4ff'
+      value = {selectedMap.get(selectedMed)??0}
+      onSlidingComplete={(value) => {
+        let newMap = new Map(selectedMap);
+        newMap.set(selectedMed,value);
+        setSelectedMap(newMap);
+      }}
+    />
+  );
+}
+
+const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
+  const [sympSeverity,setSympSeverity] = useState(sympObj?parseInt(sympObj.sympSeverity):0);
+  let medMap = new Map();
+  const [text,onChangeText] = useState(sympObj?sympObj.symptom:'');
+  const [descriptionText,setDescriptionText] = useState(sympObj?sympObj.notes:''); 
   const [meds,setMeds] = useState([]);
-  const [selectedArray,setSelectedArray] = useState();
-  const [descriptionText,setDescriptionText] = useState(sympObj?sympObj.description:'') 
+  const [selectedMap,setSelectedMap] = useState(medMap);
+  const [selectedMed,setSelectedMed] = useState('');
   const [height, setHeight] = useState(0);
   const isFocused = useIsFocused();
-  
+
   useEffect( () => {
     let data = storage.getString('hashes'); 
     if(data != null) {
       data = data.split(',');
       data = data.map(item => JSON.parse(storage.getString(item)));
     }
+    else setSelectedMap(new Map());
+    for(const key of selectedMap.keys()) {
+      if(data.find((elem) => {
+        elem.title === key;
+      })) continue;
+      else {
+        let tempMap = new Map(selectedMap);
+        tempMap.delete(key);
+        setSelectedMap(tempMap);
+      }
+    }
     setMeds(data);
+    if(sympObj) {
+      const medHashes = sympObj.medHashes.split(',');
+      const medPotency = sympObj.medPotency.split(',');
+      for(let index in medHashes) {
+        medMap.set(medHashes[index],parseInt(medPotency[index]));
+      }
+      if(selectedMap.size === 0){
+        setSelectedMap(medMap);
+        console.log('new map is ');
+        console.log(selectedMap);
+      }
+    }
+
   },[isFocused]);
  
   return (
@@ -46,8 +121,8 @@ const SympModal = ({sympObj,setSympModalVisible, navigation}) => {
           <View style = {{flex:1,margin:5,}}>
             <Text style = {{color:'white', fontFamily:'monospace',fontSize:SIZES.medium}}>Severity:</Text>
           </View>
-          <View style = {{flex:4,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-            <Text style = {{color:'white', fontFamily:'monospace',fontSize:SIZES.medium}}>0</Text>
+          <View style = {styles.sliderContainer}>
+            <Text style = {styles.sliderNumber(false)}>0</Text>
             <Slider
               style={{width: 250, height: 40,}}
               minimumValue={0}
@@ -58,28 +133,47 @@ const SympModal = ({sympObj,setSympModalVisible, navigation}) => {
               thumbTintColor='#70c4ff'
               value = {sympSeverity}
               onSlidingComplete={(value) => {
-                sympSeverity = value;
-                console.log(sympSeverity);
+                setSympSeverity(value);
               }}
             />
-            <Text style = {{color:'white', fontFamily:'monospace',fontSize:SIZES.medium}}>10</Text>
+            <Text style = {styles.sliderNumber(false)}>10</Text>
           </View>
         </View>
       </View>
-      <View style = {{flex:2,margin:5,alignItems:'center',margin:20,padding:10}}>
-              <Meds medNames = {meds} 
-                    // type = {date}
-                    handlePress={() => {
-                      //function that will check current state of the object. If not selected before, it will add current med to the list of selected meds. It will also make the slider available. And when the user changes the slider, he will be setting the value for the currently selected
-                    }} 
-                    navigation = {navigation}
-                    selectedArray={selectedArray}
-                    setSelectedArray={setSelectedArray}
-                    setSympModalVisible={setSympModalVisible}
+      <View style = {styles.medContainer}>
+        <View style = {{margin:10}}>
+                <Meds medNames = {meds} 
+                      // type = {date}
+                      navigation = {navigation}
+                      selectedMap={selectedMap}
+                      setSelectedMap={setSelectedMap}
+                      selectedMed = {selectedMed}
+                      setSelectedMed = {setSelectedMed}
+                      setSympModalVisible={setSympModalVisible}
+                      addItem = {true}
+                      allowPress = {true}
+                />
+        </View>
+        {selectedMed?
+        (<View style = {{flex:2,margin:5, padding:15,}}>
+          <View style = {{flex:2}}>
+            <Text style = {{color:'#2196F3', fontFamily:'monospace',fontSize:SIZES.medium,marginBottom:5,}}>Potency:</Text>
+          </View>
+          <View style = {styles.sliderContainer}>
+            <Text style = {styles.sliderNumber(true)}>0</Text>
+            <CustomSlider 
+              selectedMap={selectedMap} 
+              selectedMed={selectedMed}
+              setSelectedMap = {setSelectedMap}
               />
+            <Text style = {styles.sliderNumber(true)}>10</Text>
+          </View>
+        </View>
+        )
+        :<Text></Text>}
       </View>
-      <View style = {{flex:4, marginTop:10}}>
-          <Text style = {{marginTop:10,padding:10, fontFamily:'monospace', fontSize:SIZES.large}}>
+      <View style = {{flex:4,marginTop: -25}}>
+          <Text style = {{padding:10, fontFamily:'monospace', fontSize:SIZES.large}}>
             Notes:
           </Text>
           <TextInput
@@ -101,21 +195,26 @@ const SympModal = ({sympObj,setSympModalVisible, navigation}) => {
             onPress={() => {
               //refill hashObj by collecting data from the modal before sending it to be saved.
               //uncomment below code to save after checking the logic of it.
-              // if(sympObj != null) {
-              //   Delete(sympObj);
-              // }
-              // sympObj = {
-              //   ids:"",
-              //   title:text,
-              //   time:time,
-              //   days:days,
-              //   description:descriptionText,
-              //   hashCode:uuid(),
-              // }
-              // saveEvent(hashObj).then( () => {
-              //   //refresh page function
-              //   setSympModalVisible(false);
-              // })
+                if(sympObj != null) {
+                  Delete(sympObj.date, sympObj.symptom);
+                }
+                let medHashes = [];
+                let medPotency = [];
+                for(let entry of selectedMap.entries()) {
+                  medHashes.push(entry[0]);
+                  medPotency.push(entry[1]);
+                }
+                medHashes = medHashes.join(',');
+                medPotency = medPotency.join(',');
+                sympObj = {
+                  date:selected,
+                  symptom:text,
+                  notes:descriptionText,
+                  sympSeverity:sympSeverity,
+                  medHashes:medHashes,
+                  medPotency:medPotency
+                }
+                save(sympObj);
                 setSympModalVisible(false);
               }}>
             <Text style={styles.textStyle}>Save</Text>
@@ -125,8 +224,8 @@ const SympModal = ({sympObj,setSympModalVisible, navigation}) => {
           sympObj?(<TouchableOpacity
           style={[styles.button, styles.buttonClose]}
           onPress={() => {
-            Delete(sympObj);
-            navigation.goBack();
+            Delete(sympObj.date, sympObj.symptom);
+            setSympModalVisible(false);
             }}>
           <Text style={styles.textStyle}>Delete</Text>
           </TouchableOpacity>)

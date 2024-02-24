@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { COLORS,FONTS,SIZES,SHADOWS } from "../../constants";
+import { COLORS,FONTS,SIZES,SHADOWS } from '../../../constants';
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -51,6 +51,24 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     textAlign: 'center',
   },
+  medContainer : {
+    flex:3,
+    margin:15,
+    alignItems:'center',
+    margin:20,
+    padding:10,
+  },
+  sliderContainer: {
+    flex:3,
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  sliderNumber : (med) => ({
+    color:(med)?'#2196F3':'white', 
+    fontFamily:'monospace',
+    fontSize:SIZES.medium,
+  })
 
 })
 

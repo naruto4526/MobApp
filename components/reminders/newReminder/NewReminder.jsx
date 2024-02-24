@@ -8,6 +8,7 @@ import { storage } from '../../../hook/useStore';
 import 'react-native-get-random-values';
 import {v4 as uuid} from 'uuid';
 import { SIZES } from '../../../constants';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 //Fill the modal with data collecting options.
 const week = ['M','T','W','T','F','S','S'];
@@ -40,7 +41,7 @@ const Day = ({index,days,setDays}) => {
 
 const NewReminder = ({route,navigation}) => {
   let {hashObj} = route.params;
-  const [days,setDays] = useState(hashObj?((hashObj.days).split(',')).map((item) => (parseInt(item))):[]);
+  const [days,setDays] = useState((hashObj && hashObj.days)?((hashObj.days).split(',')).map((item) => (parseInt(item))):[]);
   const [text,onChangeText] = useState(hashObj?hashObj.title:'');
   const [descriptionText,setDescriptionText] = useState(hashObj?hashObj.description:'')
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -48,7 +49,8 @@ const NewReminder = ({route,navigation}) => {
   const [height, setHeight] = useState(0);
  
   return (
-    <ScrollView contentContainerStyle = {[styles.centeredView,styles.modalView]}>
+    
+    <KeyboardAwareScrollView contentContainerStyle = {[styles.centeredView,styles.modalView]}>
       <View style = {styles.medication}>
         <Text style = {{padding:15, color:'white',fontFamily:"monospace",fontSize:SIZES.xLarge}}>Medication:</Text>
         <TextInput
@@ -142,7 +144,7 @@ const NewReminder = ({route,navigation}) => {
                   <Text style={styles.textStyle}>Close</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 

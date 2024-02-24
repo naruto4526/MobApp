@@ -35,7 +35,7 @@ const Display = ({data,refetch}) => {
 
           <TouchableOpacity style = {styles.btn('Refresh',activeTab)} onPress={() => {
             setLoading(true);
-            refetch().then(movies => {
+            refetch(6).then(movies => {
               setData(movies);
               setLoading(false);
             })

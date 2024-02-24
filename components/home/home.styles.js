@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     flex:1,
-    marginTop: SIZES.medium,
+    marginTop: SIZES.small,
     gap: SIZES.small,
   },
 });

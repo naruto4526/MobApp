@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text,TouchableOpacity} from 'react-native';
+import {View, Text,TouchableOpacity, ScrollView} from 'react-native';
 import styles from "./home.styles";
 import {Card} from '../cards/card';
 
@@ -8,7 +8,7 @@ const data = ["Vitals","Reminders","Track Symptoms","Step Count","Settings","som
 const Home = ({navigation}) => {
 
   return(
-    <View style = {styles.cardsContainer}>
+    <ScrollView contentContainerStyle = {styles.cardsContainer}>
      
       {data.map((item,index) => (
           <Card title = {item} 
@@ -16,7 +16,7 @@ const Home = ({navigation}) => {
           handleNav = {()=>{navigation.navigate(`${item}`)}}
           />
       ))}
-    </View>
+    </ScrollView>
   );
 };
 

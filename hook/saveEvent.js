@@ -15,6 +15,10 @@ const saveEvent = async (hashObj) => {
       const dayIndex = new Map([['Mon',0], ['Tue',1], ['Wed',2],['Thu',3],['Fri',4],['Sat',5],['Sun',6]]);
 
       for(let day of hashObj.days) {
+        if(isNaN(day)) {
+          console.log('problem here');
+          continue;
+        }
         //create event for each day and make them repeat weekly.
         // To convert day of the week into delta with today.
         const delta = day - dayIndex.get(date.toUTCString().slice(0,3));
@@ -43,7 +47,7 @@ const saveEvent = async (hashObj) => {
     }
   }
   catch(err) {
-    console.log(err);
+    console.log('here is the ' + err);
   }
 }
 

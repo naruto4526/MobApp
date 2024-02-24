@@ -28,10 +28,9 @@
 //   console.log(info);
 // });
 
-const getData = async () => {
-  const response = await fetch("https://api.thingspeak.com/channels/2125743/feeds.json?api_key=4L15DSU8CJBHK2UG&results=5");
+const getData = async (number) => {
+  const response = await fetch(`https://api.thingspeak.com/channels/2125743/feeds.json?api_key=4L15DSU8CJBHK2UG&results=${number}`);
   const data = await response.json();
-  console.log(data);
   let info = {
     Hb:['g/dl'],
     RBC:['mcL'],
@@ -51,10 +50,10 @@ const getData = async () => {
     info.date.push(dateTime.getDate() + '/' + dateTime.getMonth() + '/' + (dateTime.getFullYear()-2000));
     info.time.push((dateTime.getHours()<10?'0':'') + dateTime.getHours() + ':' +(dateTime.getMinutes()<10?'0':'') +dateTime.getMinutes());
   }
-  console.log(info);
+  return  (info);
 }
 
-getData();
+getData(5).then((data) => console.log(data));
 
 // import {v4 as uuid} from 'uuid';
 
