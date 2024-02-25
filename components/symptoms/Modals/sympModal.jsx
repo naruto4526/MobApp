@@ -30,7 +30,8 @@ const save = (sympObj) => {
   let dateObj = storage.getString(sympObj.date);
   if(dateObj) {
     dateObj = JSON.parse(dateObj);
-    dateObj.sympObjList.push(sympObj);
+    if(dateObj.sympObjList)dateObj.sympObjList.push(sympObj);
+    else dateObj.sympObjList = [sympObj];
   }
   else {
     dateObj = {
