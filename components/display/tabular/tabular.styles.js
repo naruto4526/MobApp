@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     padding:2,
     paddingTop:5,
     //font family
-    color:(type !== "value")? COLORS.white: COLORS.primary,
+    color:(type !== "value")? COLORS.white: COLORS.gray,
 
   }),
   column:{

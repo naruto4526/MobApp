@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   btnText: (name, activeTab) => ({
     fontFamily: "monospace",
     fontSize: SIZES.medium,
-    color: name === activeTab ? "#C3BFCC" : "#AAA9B8",
+    color: name === activeTab ? 'white' : "#AAA9B8",
   }),
 });
 

@@ -1,7 +1,7 @@
 //this files contains the sizes and colors that can be imported directly from the constants folder into the styles.js files
 
 const COLORS = {
-  primary: "#312651",
+  primary: "#2196F3",
   secondary: "#444262",
   tertiary: "#5E95F7",
 

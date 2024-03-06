@@ -11,7 +11,8 @@ import { COLORS } from '../../constants';
 
 const Symptoms = ({navigation}) => {
   let date = new Date();
-  let dateString = (date.getFullYear()) + '-' + '0' + (date.getMonth() + 1) + '-' + date.getDate() ;
+  let dateString = (date.getFullYear()) + '-' + '0' + (date.getMonth() + 1) + '-' + '0' + date.getDate() ;
+  //console.log(dateString);
   const [sympObj, setSympObj] = useState(null);
   const [sympObjList,setSympObjList] = useState(null);
   const [vitalObjList, setVitalObjList] = useState([]);
@@ -39,6 +40,7 @@ const Symptoms = ({navigation}) => {
     <View style = {styles.container}>
       <Calendar
         onDayPress={day => {
+        //  console.log(day.dateString);
           setSelected(day.dateString);
         }}
         markedDates={{
