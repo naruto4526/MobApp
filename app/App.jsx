@@ -3,6 +3,8 @@ import {View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {Home,Vitals,Reminders,Symptoms,StepCount,NewReminder,Settings,Resources} from '../components';
+import { storage } from '../hook/useStore';
+import {v4 as uuid} from 'uuid';
 
 function DetailsScreen() {
   return (
@@ -15,6 +17,10 @@ function DetailsScreen() {
 const Stack = createNativeStackNavigator();
 
 function App() {
+  if(!storage.contains('userId')) {
+    storage.set('userId', uuid().slice(0,7));
+  }
+  if(!storage.contains('role')) storage.set('role', 'Patient');
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">

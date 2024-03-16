@@ -11,7 +11,7 @@ import { COLORS } from '../../constants';
 
 const Symptoms = ({navigation}) => {
   let date = new Date();
-  let dateString = (date.getFullYear()) + '-' + '0' + (date.getMonth() + 1) + '-' + '0' + date.getDate() ;
+  let dateString = (date.getFullYear()) + '-' + ((date.getMonth() < 9)?'0':'') + (date.getMonth() + 1) + '-' + ((date.getDate() < 10)?'0':'') + date.getDate() ;
   //console.log(dateString);
   const [sympObj, setSympObj] = useState(null);
   const [sympObjList,setSympObjList] = useState(null);
@@ -64,12 +64,9 @@ const Symptoms = ({navigation}) => {
       </Modal>
       <ScrollView>
         <View>
-          {
-          //vitals here if available. Onpress, they will setSympObj to current obj and make modal visible
-        }
           <View style = {{flex:1}}>
-          {!loading?vitalObjList.map((vitalObj) => {
-            return(<VitalDetail vitalObj = {vitalObj}/>)
+          {!loading?vitalObjList.map((vitalObj, index) => {
+            return(<VitalDetail vitalObj = {vitalObj} key = {index}/>)
           }):<ActivityIndicator size = "large" colors = {COLORS.primary}/>}
           </View>
           <View style = {{flex :1, }}>

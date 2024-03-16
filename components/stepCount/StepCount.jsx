@@ -5,11 +5,13 @@ import { storage } from '../../hook/useStore';
 
 const deleteKeys = () => {
   const  keys = storage.getAllKeys();
+  console.log("Starts here");
+  console.log('\n\n\n\n');
   if(keys.length != 0) {
     console.log(keys)
     for(let key of keys) {
       console.log(key + " : " + storage.getString(key));
-      storage.delete(key);
+      // storage.delete(key);
     }
   }
   else console.log("All keys deleted");

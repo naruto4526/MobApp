@@ -7,15 +7,48 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Slider from '@react-native-community/slider';
 import { Meds } from '../details/Details.jsx';
 import { useIsFocused } from '@react-navigation/native';
+import { createSympObj, updateSympObj, deleteSympObj, updateUser } from '../../../src/graphql/mutations.js';
+import { generateClient } from 'aws-amplify/api';
+const client = generateClient();
 
 //changed the object structure again. Look into all functions that fetches object from storage.
 //Fill the modal with data collecting options.
+const saveOrUpdate = async (sympObj) => {
+  let id;
+  let response;
+  try {
+    if(sympObj.id) {
+      //update sympObj
+      id = sympObj.id;
+      await client.graphql({
+        query : updateSympObj,
+        variables : {
+          input : sympObj
+        }
+      })
+    }
+    else {
+        response = await client.graphql({
+        query : createSympObj,
+        variables : {
+          input : sympObj
+        }
+      });
+    }
+  } catch (err) {
+      console.log(err);
+  } finally {
+    if(response) id = response.data.createSympObj.id;
+    console.log(id);
+    return id;
+  }
+}
 const Delete = (selected, symptom) => {
   let dateObj = JSON.parse(storage.getString(selected));
   let sympObjList = dateObj.sympObjList;
   sympObjList = sympObjList.filter((obj) => obj.symptom !== symptom);
   dateObj.sympObjList = sympObjList;
-  if(sympObjList.length > 0 )storage.set(selected,JSON.stringify(dateObj));
+  if(sympObjList.length > 0 || (dateObj.vitalObjList && dateObj.vitalObjList.length > 0)) storage.set(selected,JSON.stringify(dateObj));
   else {
     let dates = storage.getString('dates');
     dates = dates.split(',');
@@ -37,7 +70,9 @@ const save = (sympObj) => {
     dateObj = {
       sympObjList : [sympObj]
     }
-    let dates = storage.getString('dates');
+  }
+  let dates = storage.getString('dates');
+  if(!dates || !dates.includes(sympObj.date)) {
     if(!dates) dates = sympObj.date
     else dates += ',' + sympObj.date;
     storage.set('dates',dates);
@@ -207,16 +242,20 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
                 }
                 medHashes = medHashes.join(',');
                 medPotency = medPotency.join(',');
-                sympObj = {
-                  date:selected,
-                  symptom:text,
-                  notes:descriptionText,
-                  sympSeverity:sympSeverity,
-                  medHashes:medHashes,
-                  medPotency:medPotency
-                }
-                save(sympObj);
-                setSympModalVisible(false);
+                if(!sympObj) sympObj = {}
+                sympObj.userId =storage.getString('userId');
+                sympObj.date = selected;
+                sympObj.symptom = text;
+                sympObj.notes = descriptionText;
+                sympObj.sympSeverity = sympSeverity;
+                sympObj.medHashes = medHashes;
+                sympObj.medPotency = medPotency;
+                
+                saveOrUpdate(sympObj).then((id) => {
+                  sympObj.id = id;
+                  save(sympObj);
+                  setSympModalVisible(false);
+                });
               }}>
             <Text style={styles.textStyle}>Save</Text>
         </TouchableOpacity>
@@ -224,8 +263,16 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
           //onPress will call a delete hook first.
           sympObj?(<TouchableOpacity
           style={[styles.button, styles.buttonClose]}
-          onPress={() => {
+          onPress={async () => {
             Delete(sympObj.date, sympObj.symptom);
+            if(sympObj.id) {
+              await client.graphql({
+                query : deleteSympObj,
+                variables : {
+                  input : {id :sympObj.id}
+                }
+              });
+            }
             setSympModalVisible(false);
             }}>
           <Text style={styles.textStyle}>Delete</Text>
