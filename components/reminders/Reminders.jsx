@@ -15,14 +15,18 @@ const Item = ({item,handlePress}) => {
 };
 
 const Reminders = ({navigation}) => {
-  const [data,setData] = useState(0);
+  const [data,setData] = useState([]);
   const isFocused = useIsFocused();
   
   useEffect( () => {
     let data = storage.getString('hashes'); 
-    if(data != null) {
+    if(data) {
       data = data.split(',');
-      data = data.map(item => JSON.parse(storage.getString(item)));
+      data = data.map(item => {
+        if(storage.getString(item)) {
+          return JSON.parse(storage.getString(item));
+        }
+      });
     }
     setData(data);
   },[isFocused]);
@@ -30,7 +34,7 @@ const Reminders = ({navigation}) => {
   return(
   <View style = {{flex:1}}>
     <View style = {{flex:10}}>
-      {data != null?(
+      {data !== null?(
         <FlatList
           data = {data}
           renderItem={({item}) => (<Item item = {item} handlePress = {() => {

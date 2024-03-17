@@ -58,7 +58,7 @@ const VitalDetail = ({vitalObj}) => {
   let vitalValuePairs = [];
   for(const key in vitalObj) {
     let temp = [key, vitalObj[key]];
-    if(key === 'Date' || key === 'Time')continue;
+    if(key === 'Date' || key === 'Time' || key === 'date')continue;
     vitalValuePairs.push(temp);
   }
   return(

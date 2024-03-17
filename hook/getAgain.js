@@ -1,7 +1,32 @@
 import { timeout } from "./timeout";
 import { storage } from "./useStore";
-import { getData } from "../components/vitals/Vitals";
+import { createVitalObj, updateUser } from "../src/graphql/mutations";
+import { generateClient } from 'aws-amplify/api';
+import { updateDate } from "../components/symptoms/Modals/sympModal";
+const client = generateClient();
 
+const saveVitals = async (vitalObj) => {
+  let response;
+  const VitalObj = {...vitalObj}
+  for(let key in VitalObj) {
+    if(key === 'date') continue;
+    VitalObj[key] = VitalObj[key].join(',');
+  }
+  VitalObj.userId = storage.getString('userId');
+  console.log(VitalObj);
+  try {
+    response = await client.graphql({
+      query : createVitalObj,
+      variables : {
+        input : VitalObj
+      }
+    })
+  } catch(err) {
+    console.log(err);
+  } finally {
+    console.log(response);
+  }
+}
 const getAgain = (interval) => {
   timeout.clearAllTimeouts();
   doStuff(1).then(() => {
@@ -11,7 +36,7 @@ const getAgain = (interval) => {
   }).catch((err) => {
     console.log(err);
     //maybe make call to function again. Lets see.
-  })
+  });
  
 }
 
@@ -22,7 +47,7 @@ const doStuff = async (number) => {
   for(let obj of data.feeds) {
     let dateTime = new Date(obj.created_at);
     let dateObj;
-    const dateString = (dateTime.getFullYear()) + '-' + (dateTime.getMonth() < 10?'0':'') + (dateTime.getMonth() + 1) + '-' + (dateTime.getDate() < 10?'0':'') + dateTime.getDate();
+    const dateString = (dateTime.getFullYear()) + '-' + (dateTime.getMonth() < 9?'0':'') + (dateTime.getMonth() + 1) + '-' + (dateTime.getDate() < 10?'0':'') + dateTime.getDate();
     console.log(dateString);
     let info = {
       Hb:['g/dl'],
@@ -32,6 +57,7 @@ const doStuff = async (number) => {
       Hr:['bpm'],
       Date:[],
       Time:[],
+      date : dateString
     }
 
     info.Hr.splice(-1,0,obj.field4==null?0:obj.field4);
@@ -39,7 +65,7 @@ const doStuff = async (number) => {
     info.RBC.splice(-1,0,obj.field7==null?0:obj.field7.slice(0,4));
     info.Temp.splice(-1,0,obj.field8==null?0:obj.field8);
     info.SpO2.splice(-1,0,obj.field5==null?0:obj.field5);
-    info.Date.push(dateTime.getDate() + '/' + dateTime.getMonth() + '/' + (dateTime.getFullYear()-2000));
+    info.Date.push(dateTime.getDate() + '/' + (dateTime.getMonth() + 1)+ '/' + (dateTime.getFullYear()-2000));
     const timeB = (dateTime.getHours()<10?'0':'') + dateTime.getHours() + ':' +(dateTime.getMinutes()<10?'0':'') +dateTime.getMinutes();
     info.Time.push(timeB);
 
@@ -49,9 +75,13 @@ const doStuff = async (number) => {
       if(dateObj.vitalObjList) {
         if(compareTimes(dateObj.vitalObjList.at(-1).Time[0], timeB)) {
           dateObj.vitalObjList.push(info);
+          saveVitals(info);
         }
       }
-      else dateObj.vitalObjList = [info];
+      else {
+        dateObj.vitalObjList = [info];
+        saveVitals(info);
+      }
     }
     else {
       dateObj = {
@@ -63,6 +93,8 @@ const doStuff = async (number) => {
       }
       if(!dates.includes(dateString)) dates += ',' + dateString;
       storage.set('dates', dates);
+      saveVitals(info);
+      updateDate();
     }
     storage.set(dateString, JSON.stringify(dateObj));
   }

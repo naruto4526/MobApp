@@ -9,6 +9,10 @@ import 'react-native-get-random-values';
 import {v4 as uuid} from 'uuid';
 import { SIZES } from '../../../constants';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { updateMedObj, createMedObj, deleteMedObj } from '../../../src/graphql/mutations';
+import { updateDate, saveOrUpdate } from '../../symptoms/Modals/sympModal';
+import { generateClient } from 'aws-amplify/api';
+const client = generateClient();
 
 //Fill the modal with data collecting options.
 const week = ['M','T','W','T','F','S','S'];
@@ -18,10 +22,9 @@ const Delete = (hashObj) => {
   storage.delete(hashObj.hashCode);
   let hashes = storage.getString('hashes');
   hashes = hashes.split(',');
-  hashes.splice(hashes.indexOf(hashObj.hashCode),1)
+  hashes.splice(hashes.indexOf(hashObj.hashCode),1);
   hashes = hashes.join(',');
-  if(hashes != "") storage.set('hashes',hashes);
-  else storage.delete('hashes');
+  storage.set('hashes',hashes);
 }
 
 const Day = ({index,days,setDays}) => {
@@ -41,6 +44,9 @@ const Day = ({index,days,setDays}) => {
 
 const NewReminder = ({route,navigation}) => {
   let {hashObj} = route.params;
+  console.log(hashObj);
+  if(hashObj) hashObj = JSON.parse(storage.getString(hashObj.hashCode));
+  if(hashObj) console.log('hashObj.id ' + hashObj.id);
   const [days,setDays] = useState((hashObj && hashObj.days)?((hashObj.days).split(',')).map((item) => (parseInt(item))):[]);
   const [text,onChangeText] = useState(hashObj?hashObj.title:'');
   const [descriptionText,setDescriptionText] = useState(hashObj?hashObj.description:'')
@@ -112,15 +118,25 @@ const NewReminder = ({route,navigation}) => {
               if(hashObj != null) {
                 Delete(hashObj);
               }
-              hashObj = {
-                ids:"",
-                title:text,
-                time:time,
-                days:days,
-                description:descriptionText,
-                hashCode:uuid(),
-              }
+              else hashObj = {}
+              hashObj.ids = ""
+              hashObj.title = text;
+              hashObj.time = time;
+              hashObj.days = days;
+              hashObj.description = descriptionText;
+              hashObj.hashCode = uuid()
+              hashObj.userId = storage.getString('userId');
+              
               saveEvent(hashObj).then( () => {
+                saveOrUpdate(hashObj, updateMedObj, createMedObj).then((id) => {
+                  hashObj.id = id;
+                  console.log(hashObj);
+                  storage.set(hashObj.hashCode, JSON.stringify(hashObj));
+                  console.log('hashObj.id is ' + hashObj.id);
+                  updateDate();
+                }).catch((err) => {
+                  console.log(err);
+                })
                 navigation.goBack();
               })
               }}>
@@ -130,8 +146,23 @@ const NewReminder = ({route,navigation}) => {
           //onPress will call a delete hook first.
           hashObj?(<TouchableOpacity
           style={[styles.button, styles.buttonClose]}
-          onPress={() => {
+          onPress={async () => {
             Delete(hashObj);
+            try {
+              console.log(hashObj);
+              console.log('hashObj.id is ' + hashObj.id);
+              if(hashObj.id) {
+                await client.graphql({
+                  query : deleteMedObj,
+                  variables : {
+                    input : {id :hashObj.id}
+                  }
+                });
+              }
+            } catch(err) {
+              console.log(err);
+            }
+            updateDate();
             navigation.goBack();
             }}>
           <Text style={styles.textStyle}>Delete</Text>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { storage } from '../../hook/useStore';
+import {updateDate} from '../symptoms/Modals/sympModal'
 
 const deleteKeys = () => {
   const  keys = storage.getAllKeys();
@@ -11,10 +12,14 @@ const deleteKeys = () => {
     console.log(keys)
     for(let key of keys) {
       console.log(key + " : " + storage.getString(key));
-      // storage.delete(key);
+      storage.delete(key);
     }
   }
   else console.log("All keys deleted");
+  storage.set('savedBefore', 'true');
+  storage.set('userId', 'b4e0fa4');
+  storage.set('name', 'Shakthi');
+  storage.set('role', 'Patient');
 }
 const StepCount = () => {
   //commented below is code that will delete all the keys.

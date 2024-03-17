@@ -13,15 +13,16 @@ const client = generateClient();
 
 //changed the object structure again. Look into all functions that fetches object from storage.
 //Fill the modal with data collecting options.
-const saveOrUpdate = async (sympObj) => {
+const saveOrUpdate = async (sympObj, update, create) => {
   let id;
   let response;
+  //console.log(sympObj);
   try {
     if(sympObj.id) {
       //update sympObj
       id = sympObj.id;
       await client.graphql({
-        query : updateSympObj,
+        query : update,
         variables : {
           input : sympObj
         }
@@ -29,7 +30,7 @@ const saveOrUpdate = async (sympObj) => {
     }
     else {
         response = await client.graphql({
-        query : createSympObj,
+        query : create,
         variables : {
           input : sympObj
         }
@@ -38,12 +39,13 @@ const saveOrUpdate = async (sympObj) => {
   } catch (err) {
       console.log(err);
   } finally {
-    if(response) id = response.data.createSympObj.id;
-    console.log(id);
-    return id;
+    if(id) return id;
+    if(response.data.createSympObj) return response.data.createSympObj.id;
+    else if(response.data.createMedObj) return response.data.createMedObj.id;
   }
 }
 const Delete = (selected, symptom) => {
+  if(!storage.getString(selected)) return;
   let dateObj = JSON.parse(storage.getString(selected));
   let sympObjList = dateObj.sympObjList;
   sympObjList = sympObjList.filter((obj) => obj.symptom !== symptom);
@@ -52,9 +54,9 @@ const Delete = (selected, symptom) => {
   else {
     let dates = storage.getString('dates');
     dates = dates.split(',');
-    dates = dates.splice(dates.indexOf(selected), 1);
+    dates.splice(dates.indexOf(selected), 1);
     dates = dates.join(',');
-    if(dates) storage.set('dates', dates);
+    storage.set('dates', dates);
     storage.delete(selected);
   }
 }
@@ -78,6 +80,24 @@ const save = (sympObj) => {
     storage.set('dates',dates);
   }
   storage.set(sympObj.date, JSON.stringify(dateObj));
+}
+const updateDate = async () => {
+  const query = updateUser;
+  const userData = {userId : storage.getString('userId'), dates : storage.getString('dates'), hashes : storage.getString('hashes')!== null?storage.getString('hashes'):''}
+  let data;
+    try {
+      data = await client.graphql({
+        query: query,
+        variables: {
+          input: userData
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      // console.log(data);
+      // console.log('user edited')
+    }
 }
 const CustomSlider = ({selectedMed,selectedMap,setSelectedMap}) => {
   return (
@@ -251,9 +271,10 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
                 sympObj.medHashes = medHashes;
                 sympObj.medPotency = medPotency;
                 
-                saveOrUpdate(sympObj).then((id) => {
+                saveOrUpdate(sympObj, updateSympObj, createSympObj).then((id) => {
                   sympObj.id = id;
                   save(sympObj);
+                  updateDate();
                   setSympModalVisible(false);
                 });
               }}>
@@ -273,6 +294,7 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
                 }
               });
             }
+            updateDate();
             setSympModalVisible(false);
             }}>
           <Text style={styles.textStyle}>Delete</Text>
@@ -294,5 +316,5 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
   );
 };
 
-export {SympModal};
+export {SympModal, updateDate, saveOrUpdate};
 

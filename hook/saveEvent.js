@@ -38,7 +38,7 @@ const saveEvent = async (hashObj) => {
       }
       
       let eventHashes = storage.getString('hashes');
-      if(eventHashes == null) eventHashes = hashObj.hashCode;
+      if(!eventHashes) eventHashes = hashObj.hashCode;
       else eventHashes += "," + hashObj.hashCode;
       hashObj.days = hashObj.days.join(',');
       storage.set('hashes',eventHashes);
