@@ -45,7 +45,8 @@ type MedObj @model {
 }
 
 type Chat @model {
-  userId : ID! @primaryKey
+  id : ID!
+  userId : ID! 
   text : String
   type : String
 }

@@ -3,8 +3,7 @@ import { SIZES, COLORS } from "../../constants";
 
 const styles = StyleSheet.create({
   centeredView: {
-    flex: 1,
-    alignItems: 'flex-start',
+    flex: 2,
     margin: 22,
     marginTop : 30,
     borderRadius : 10,
@@ -20,9 +19,22 @@ const styles = StyleSheet.create({
   },
   nameBox : {
     flexDirection : 'row',
-    flex : 1,
     alignItems : 'center',
     justifyContent:'space-between'
+  },
+  patient : {
+    flexDirection : 'row',
+    backgroundColor : COLORS.tertiary,
+    borderRadius : 5,
+    margin : 10,
+    padding : 10,
+    justifyContent : 'space-between'
+  },
+  patientText : {
+    fontSize : SIZES.medium*1,
+    fontFamily : 'monospace',
+    color: COLORS.white,
+    margin : 3
   }
 });
 

@@ -1,58 +1,66 @@
 import React, { useState } from "react";
-import { Button, View, Text } from "react-native";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Button, View, Text, TextInput, ScrollView } from "react-native";
 import { storage } from '../../hook/useStore';
-import {updateDate} from '../symptoms/Modals/sympModal'
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { styles } from "./stepcount.styles";
+import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
+import { COLORS } from "../../constants";
 
-const deleteKeys = () => {
-  const  keys = storage.getAllKeys();
-  console.log("Starts here");
-  console.log('\n\n\n\n');
-  if(keys.length != 0) {
-    console.log(keys)
-    for(let key of keys) {
-      console.log(key + " : " + storage.getString(key));
-      storage.delete(key);
-    }
-  }
-  else console.log("All keys deleted");
-  storage.set('savedBefore', 'true');
-  storage.set('userId', 'b4e0fa4');
-  storage.set('name', 'Shakthi');
-  storage.set('role', 'Patient');
-}
+
 const StepCount = () => {
-  //commented below is code that will delete all the keys.
-  
-  
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirm = (date) => {
-    console.log("A time has been picked: ", date);
-    hideDatePicker();
-  };
+  const [fill, setFill] = useState(0);
+  const data=[ {value:50}, {value:80}, {value:90}, {value:70} ]
 
   return (
-    <View style = {{flex:1, justifyContent:'center', alignItems:'center'}}>
-      {/* <Button title="Show Date Picker" onPress={showDatePicker} />
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="time"
-        onConfirm={handleConfirm}
-        onCancel={hideDatePicker}
-      /> */}
-      <Text>To be built</Text>
-      <Button onPress={() => {deleteKeys()}} title = "delete stored data" />
+    <ScrollView contentContainerStyle = {{backgroundColor : COLORS.tertiary}}>
+    <View style = {{flex : 1, margin : 20, padding : 10}}>
+      <View style = {{flex:1, justifyContent:'center', alignItems:'center', margin : 5}}>
+        <AnimatedCircularProgress
+        size={270}
+        width={30}
+        onAnimationComplete={() => console.log('onAnimationComplete')}
+        backgroundColor="#3d5875" 
+        fill={fill}
+        tintColor="#00e0ff">
+        {
+          (fill) => (
+            <Text style = {[styles.text,{color : 'red'}]}>
+              { fill }
+            </Text>
+          )
+        }
+        </AnimatedCircularProgress>
+      </View>
+      <View style = {styles.goalContainer}>
+          <Text style = {styles.text}>Set Goal : </Text>
+          <View style = {{flex : 1, flexDirection : 'row', alignItems : 'center'}}>
+            <TextInput
+              value = {''}
+              style = {{ height: 40, width : 100, margin: 12,borderWidth: 0.9, borderRadius: 5,padding: 10,flex:1, backgroundColor: 'white', color:'black'}}
+              editable = {false}
+            />
+            <View style = {{flex : 1, flexDirection : 'row',}}>
+              <Text style = {styles.butt}>+</Text>
+              <Text style = {styles.butt}>-</Text>
+            </View>
+          </View>
+        </View>
+        <View>
+        <BarChart data = {data} />
+        </View>
     </View>
+    </ScrollView>
   );
 };
 
 export {StepCount};
+
+// const stepData = {
+//   goal : 'string number',
+//   stepsToday : 'string number',
+//   pastSteps : 'steps, steps, steps',
+//   pastGoals : 'goal, goal, goal',
+//   dates : 'date, date, date, date',
+//   today : 'date'
+// }
+//compare today's date with date in storage, and update the stepData json object accordingly, reset the value of today in the step object.

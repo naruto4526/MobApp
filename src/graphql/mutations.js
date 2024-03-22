@@ -241,6 +241,7 @@ export const createChat = /* GraphQL */ `
     $condition: ModelChatConditionInput
   ) {
     createChat(input: $input, condition: $condition) {
+      id
       userId
       text
       type
@@ -256,6 +257,7 @@ export const updateChat = /* GraphQL */ `
     $condition: ModelChatConditionInput
   ) {
     updateChat(input: $input, condition: $condition) {
+      id
       userId
       text
       type
@@ -271,6 +273,7 @@ export const deleteChat = /* GraphQL */ `
     $condition: ModelChatConditionInput
   ) {
     deleteChat(input: $input, condition: $condition) {
+      id
       userId
       text
       type

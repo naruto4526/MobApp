@@ -17,10 +17,10 @@ const styles = StyleSheet.create({
     marginRight:10
   },
   logoContainer: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     backgroundColor: '#FFFFFF',
-    borderRadius: SIZES.xLarge,
+    borderRadius: SIZES.medium/2,
     justifyContent: "center",
     alignItems: "center",
   },

@@ -202,6 +202,7 @@ export const onDeleteMedObj = /* GraphQL */ `
 export const onCreateChat = /* GraphQL */ `
   subscription OnCreateChat($filter: ModelSubscriptionChatFilterInput) {
     onCreateChat(filter: $filter) {
+      id
       userId
       text
       type
@@ -214,6 +215,7 @@ export const onCreateChat = /* GraphQL */ `
 export const onUpdateChat = /* GraphQL */ `
   subscription OnUpdateChat($filter: ModelSubscriptionChatFilterInput) {
     onUpdateChat(filter: $filter) {
+      id
       userId
       text
       type
@@ -226,6 +228,7 @@ export const onUpdateChat = /* GraphQL */ `
 export const onDeleteChat = /* GraphQL */ `
   subscription OnDeleteChat($filter: ModelSubscriptionChatFilterInput) {
     onDeleteChat(filter: $filter) {
+      id
       userId
       text
       type

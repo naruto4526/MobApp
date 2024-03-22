@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {Home,Vitals,Reminders,Symptoms,StepCount,NewReminder,Settings,Resources} from '../components';
+import {Home,Vitals,Reminders,Symptoms,StepCount,NewReminder,Settings,Resources, Notes} from '../components';
 import { storage } from '../hook/useStore';
 import {v4 as uuid} from 'uuid';
 
@@ -31,6 +31,7 @@ function App() {
         <Stack.Screen name="Step Count" component={StepCount}/>
         <Stack.Screen name="NewReminder" component={NewReminder} />
         <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="Notes" component={Notes} />
         <Stack.Screen name="Resources" component={Resources} />
       </Stack.Navigator>
     </NavigationContainer>

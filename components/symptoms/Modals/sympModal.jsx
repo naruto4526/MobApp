@@ -132,9 +132,12 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
 
   useEffect( () => {
     let data = storage.getString('hashes'); 
+    if(!data) data = null;
     if(data != null) {
       data = data.split(',');
-      data = data.map(item => JSON.parse(storage.getString(item)));
+      data = data.map(item => {
+        return JSON.parse(storage.getString(item));
+      });
     }
     else setSelectedMap(new Map());
     for(const key of selectedMap.keys()) {

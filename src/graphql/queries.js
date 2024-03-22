@@ -174,8 +174,9 @@ export const listMedObjs = /* GraphQL */ `
   }
 `;
 export const getChat = /* GraphQL */ `
-  query GetChat($userId: ID!) {
-    getChat(userId: $userId) {
+  query GetChat($id: ID!) {
+    getChat(id: $id) {
+      id
       userId
       text
       type
@@ -187,20 +188,13 @@ export const getChat = /* GraphQL */ `
 `;
 export const listChats = /* GraphQL */ `
   query ListChats(
-    $userId: ID
     $filter: ModelChatFilterInput
     $limit: Int
     $nextToken: String
-    $sortDirection: ModelSortDirection
   ) {
-    listChats(
-      userId: $userId
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-      sortDirection: $sortDirection
-    ) {
+    listChats(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
+        id
         userId
         text
         type
