@@ -45,7 +45,6 @@ const Settings = () => {
   }
   return (
     <View style = {{flex: 1}}>
-      <Button onPress={() => {deleteKeys()}} title = "delete stored data" />
       <View style={styles.centeredView}>
         <View style = {styles.nameBox}>
           <Text style = {styles.text}>Name: </Text>
@@ -102,7 +101,7 @@ const Settings = () => {
         {storage.getString('role') !== 'Patient' ?
           <View style = {{flex : 2}}>
           <View style = {[styles.nameBox, { margin :15}]}>
-            <Text>UserId: </Text>
+            <Text style = {styles.text}>UserId: </Text>
             <TextInput
               onChangeText={(text) => {
                 setPatientId(text);

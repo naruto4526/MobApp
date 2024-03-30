@@ -20,6 +20,7 @@ const saveOrUpdate = async (sympObj, update, create) => {
   try {
     if(sympObj.id) {
       //update sympObj
+      console.log("comes here");
       id = sympObj.id;
       await client.graphql({
         query : update,
@@ -273,7 +274,6 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
                 sympObj.sympSeverity = sympSeverity;
                 sympObj.medHashes = medHashes;
                 sympObj.medPotency = medPotency;
-                
                 saveOrUpdate(sympObj, updateSympObj, createSympObj).then((id) => {
                   sympObj.id = id;
                   save(sympObj);

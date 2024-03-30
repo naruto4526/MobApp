@@ -45,6 +45,8 @@ const listChat = async () => {
       eq : storage.contains('patientId') ? storage.getString('patientId') : storage.getString('userId')
     }
   };
+  console.log(filter);
+  console.log(storage.getString('patientId'))
   try {
     response = await client.graphql({
       query : listChats,

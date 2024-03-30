@@ -101,6 +101,25 @@ const doStuff = async (number) => {
 }
 
 const doStuff2 = async () => {
+  try {
+    const response = await fetch(`https://api.thingspeak.com/channels/2125743/feeds.json?api_key=4L15DSU8CJBHK2UG&results=1`);
+    const data = await response.json();
+    const stepCount = data.feeds[0].field2;
+    const entryId = data.feeds[0].entry_id;
+    const createdAt = data.feeds[0].created_at;
+    const stepCountObj = {
+      stepCount : stepCount,
+      entryId : entryId,
+      createdAt : createdAt
+    }
+    if (storage.contains('stepCount')) {
+      if (JSON.parse(storage.getString('stepCount')).entryId < entryId) {
+        storage.set('stepCount', JSON.stringify(stepCountObj));
+      }
+    } else storage.set('stepCount', JSON.stringify(stepCountObj));
+  } catch (err) {
+    console.log(err);
+  } 
 
 }
 

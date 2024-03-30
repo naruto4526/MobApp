@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     borderColor : COLORS.gray
   },
   text : {
-    fontSize : SIZES.medium*1.2,
+    fontSize : SIZES.medium,
     fontFamily : 'monospace',
     color: COLORS.gray,
     margin : 3
