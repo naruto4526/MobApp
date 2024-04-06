@@ -4,46 +4,41 @@ import { storage } from '../../hook/useStore';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { styles } from "./stepcount.styles";
 import { BarChart, LineChart, PieChart, PopulationPyramid } from "react-native-gifted-charts";
-import { COLORS } from "../../constants";
+import { COLORS, SIZES } from "../../constants";
 
-
+const getTime = (date) => {
+  const dateTime = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours() + 5,date.getMinutes() + 30, date.getSeconds());
+  return (dateTime.toUTCString().slice(-12,-4));
+}
 const StepCount = () => {
-  const dateTime = new Date();
-  const options = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  };
   const [stepCount, setStepCount] = useState(storage.contains('stepCount') ? JSON.parse(storage.getString('stepCount')) : {
-    stepCount : 500,
+    stepCount : 0,
     entryId : -1,
     createdAt : ''
   });
-  const [dateString, setDateString] = useState((dateTime.getHours()<10?'0':'') + dateTime.getHours() + ':' +(dateTime.getMinutes()<10?'0':'') +dateTime.getMinutes());
-  const [goal, setGoal] = useState(storage.contains('goal') ? parseInt(storage.getString('goal')) : 1000)
+  const [dateString, setDateString] = useState();
+  const [goal, setGoal] = useState(storage.getString('goal') ? parseInt(storage.getString('goal')) : 1000)
   const [fill, setFill] = useState(null);
-  const data=[ {value:50}, {value:80}, {value:90}, {value:70} ]
 
   useEffect(() => {
     setFill('');
     if(stepCount.createdAt) {
       const date = new Date(stepCount.createdAt);
-      setDateString(date.toLocaleDateString());
+      setDateString(getTime(date));
     }
   }, [stepCount]);
   
   return (
     <ScrollView>
     <View style = {{flex : 1, margin : 20, padding : 10}}>
-      <View style = {{flex:1, justifyContent:'center', alignItems:'center', margin : 5}}>
+      <View style = {{flex:1, justifyContent:'center', alignItems:'center', margin : 1, borderWidth:0, padding : 20, borderRadius : 5, backgroundColor : 'pink'}}>
         <AnimatedCircularProgress
         size={270}
         width={30}
         onAnimationComplete={() => {
           setFill(parseInt(stepCount.stepCount));
         }}
-        backgroundColor="#3d5875" 
+        backgroundColor= {COLORS.lightWhite} 
         fill={Math.floor((stepCount.stepCount / goal) * 100) }
         tintColor="#4287f5">
         {
@@ -54,11 +49,19 @@ const StepCount = () => {
           )
         }
         </AnimatedCircularProgress>
+        <View style = {styles.timeContainer}>
+          <Text style = {styles.timeText}>Last refreshed at</Text>  
+          <Text style = {styles.timeText}>:</Text>
+          <Text style = {styles.timeText}>{dateString ?? ''}</Text>
+        </View>
       </View>
-      <View style = {styles.timeContainer}>
-       <Text>Last refreshed at</Text>  
-       <Text>:</Text>
-       <Text>{dateString ?? ''}</Text>
+      <View style = {styles.stepsLeftContainer}>
+        <Text style = {styles.stepsLeftText}>
+          Steps left to reach goal
+        </Text>
+        <Text style = {[styles.stepsLeftText, {fontSize : SIZES.xxLarge, margin : 20}]}>
+          {Math.max(0, goal - stepCount.stepCount)}
+        </Text>
       </View>
       <View style = {styles.goalContainer}>
           <Text style = {styles.text}>Set Goal : </Text>
@@ -69,11 +72,17 @@ const StepCount = () => {
               editable = {false}
             />
             <View style = {{flex : 1, flexDirection : 'row',}}>
-              <TouchableOpacity onPress = {() => (setGoal(goal + 1000))}>
+              <TouchableOpacity onPress = {() => {
+                setGoal(goal + 1000);
+                storage.set('goal', '' + (goal + 1000));
+                }}>
               <Text style = {styles.butt}>+</Text>
               </TouchableOpacity>
               <TouchableOpacity>
-              <Text style = {styles.butt} onPress = {() => {if (goal > 1000) setGoal(goal - 1000);}}>-</Text>
+              <Text style = {styles.butt} onPress = {() => {if (goal > 1000) {
+                setGoal(goal - 1000);
+                storage.set('goal','' + (goal - 1000));
+              }}}>-</Text>
               </TouchableOpacity>
             </View>
           </View>

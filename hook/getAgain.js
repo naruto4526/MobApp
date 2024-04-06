@@ -30,11 +30,11 @@ const saveVitals = async (vitalObj) => {
 const getAgain = (interval) => {
   timeout.clearAllTimeouts();
   doStuff(1).then(() => {
-
-    //logic to fetch step count data and save it
+    doStuff2().then(() => {
     timeout.setTimeout(() => {getAgain(interval)}, interval);
+    });
   }).catch((err) => {
-    console.log(err);
+    console.log('error is here' + err);
     //maybe make call to function again. Lets see.
   });
  
@@ -102,7 +102,7 @@ const doStuff = async (number) => {
 
 const doStuff2 = async () => {
   try {
-    const response = await fetch(`https://api.thingspeak.com/channels/2125743/feeds.json?api_key=4L15DSU8CJBHK2UG&results=1`);
+    const response = await fetch(`https://api.thingspeak.com/channels/2248859/feeds.json?api_key=QXG4M1BJRUAIKNZL&results=1`);
     const data = await response.json();
     const stepCount = data.feeds[0].field2;
     const entryId = data.feeds[0].entry_id;
@@ -112,13 +112,20 @@ const doStuff2 = async () => {
       entryId : entryId,
       createdAt : createdAt
     }
+    console.log("fetching step data");
+    console.log(stepCountObj);
     if (storage.contains('stepCount')) {
       if (JSON.parse(storage.getString('stepCount')).entryId < entryId) {
+        console.log('added1');
         storage.set('stepCount', JSON.stringify(stepCountObj));
       }
-    } else storage.set('stepCount', JSON.stringify(stepCountObj));
+      else console.log('no new data');
+    } else {
+      console.log('added2');
+      storage.set('stepCount', JSON.stringify(stepCountObj));
+    }
   } catch (err) {
-    console.log(err);
+    console.log('error is here' + err);
   } 
 
 }

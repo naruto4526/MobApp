@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
   number : {
     fontFamily : 'monospace',
-    fontSize : SIZES.xxLarge,
+    fontSize : SIZES.xLarge*1.5,
     textAlign : 'center',
     margin : 3,
     padding : 3,
@@ -22,9 +22,27 @@ const styles = StyleSheet.create({
   timeContainer : {
     flexDirection : 'row',
     margin : 20,
+    marginBottom : 0,
     padding : 5,
     alignItems : 'center',
     justifyContent : 'center'
+  },
+  timeText : {
+    fontFamily : 'monospace',
+    fontSize : SIZES.medium,
+    margin : 4,
+    textAlign : 'center'
+  },
+  stepsLeftContainer : {
+    margin : 10,
+    padding : 5,
+    justifyContent : 'center',
+    alignItems : 'center'
+  },
+  stepsLeftText : {
+    fontFamily : 'monospace',
+    fontSize : SIZES.large,
+    color : COLORS.gray
   },
   goalContainer : {
     flex : 1,
