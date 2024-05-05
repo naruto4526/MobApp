@@ -3,8 +3,7 @@ import { COLORS,FONTS,SIZES,SHADOWS } from "../../constants";
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-
+    flex:20,
   },
   addButton : {
     height:60,
@@ -31,6 +30,37 @@ const styles = StyleSheet.create({
     textAlign:'center',
     color:'white',
     fontSize:SIZES.xLarge,
+  },
+  modePicker : {
+    flexDirection:'row',
+    flex:1.5,
+    padding:10,
+    justifyContent:'space-around'
+  },
+  picker: (on) => ({
+    backgroundColor:on ? '#2196F3' : COLORS.lightWhite,
+    width : '45%',
+    justifyContent:'center',
+    padding:10,
+    borderRadius : 5
+  }),
+  pickerText :(on) => ({
+    fontFamily:'monospace',
+    textAlign:'center',
+    color : on? COLORS.white : '#2196F3',
+  }),
+  dateContainer : {
+    marginTop:25,
+    marginBottom:10,
+    borderBottomWidth:2,
+    borderBlockColor: COLORS.gray,
+    marginLeft:15,
+    marginRight:15,
+  },
+  dateDate : {
+    fontFamily:'monospace',
+    fontSize:SIZES.medium,
+    marginBottom:5,
   }
 });
 

@@ -104,7 +104,7 @@ const CustomSlider = ({selectedMed,selectedMap,setSelectedMap}) => {
   return (
     <Slider
       style={{width: 250, height: 40,}}
-      minimumValue={0}
+      minimumValue={1}
       maximumValue={10}
       minimumTrackTintColor="#2196F3"
       maximumTrackTintColor="#023e9e"
@@ -182,10 +182,10 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
             <Text style = {{color:'white', fontFamily:'monospace',fontSize:SIZES.medium}}>Severity:</Text>
           </View>
           <View style = {styles.sliderContainer}>
-            <Text style = {styles.sliderNumber(false)}>0</Text>
+            <Text style = {styles.sliderNumber(false)}>1</Text>
             <Slider
               style={{width: 250, height: 40,}}
-              minimumValue={0}
+              minimumValue={1}
               maximumValue={10}
               minimumTrackTintColor="#FFFFFF"
               maximumTrackTintColor="#023e9e"
@@ -220,7 +220,7 @@ const SympModal = ({sympObj,setSympModalVisible, navigation, selected}) => {
             <Text style = {{color:'#2196F3', fontFamily:'monospace',fontSize:SIZES.medium,marginBottom:5,}}>Potency:</Text>
           </View>
           <View style = {styles.sliderContainer}>
-            <Text style = {styles.sliderNumber(true)}>0</Text>
+            <Text style = {styles.sliderNumber(true)}>1</Text>
             <CustomSlider 
               selectedMap={selectedMap} 
               selectedMed={selectedMed}

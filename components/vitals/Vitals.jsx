@@ -4,7 +4,7 @@ import { COLORS } from '../../constants';
 import { Display } from '../display/Display';
 
 const getData = async (number) => {
-  const response = await fetch(`https://api.thingspeak.com/channels/2125743/feeds.json?api_key=4L15DSU8CJBHK2UG&results=${number}`);
+  const response = await fetch(`https://api.thingspeak.com/channels/2493014/feeds.json?api_key=APB58CYRN8H4CTIB&results=${number}`);
   //${number}
   const data = await response.json();
   let info = {
@@ -12,18 +12,18 @@ const getData = async (number) => {
     RBC:['mcL'],
     Temp:['C'],
     SpO2:['%'],
-    Hr:['bpm'],
+    HR:['bpm'],
     Date:[],
     Time:[],
   }
   for(let obj of data.feeds) {
     let dateTime = new Date(obj.created_at);
-    info.Hr.splice(-1,0,obj.field4==null?0:obj.field4);
-    info.Hb.splice(-1,0,obj.field6==null?0:obj.field6.slice(0,5));
-    info.RBC.splice(-1,0,obj.field7==null?0:obj.field7.slice(0,4));
-    info.Temp.splice(-1,0,obj.field8==null?0:obj.field8);
-    info.SpO2.splice(-1,0,obj.field5==null?0:obj.field5);
-    info.Date.push(dateTime.getDate() + '/' + dateTime.getMonth() + '/' + (dateTime.getFullYear()-2000));
+    info.HR.splice(-1,0,obj.field3==null?0:obj.field3);
+    info.Hb.splice(-1,0,obj.field1==null?0:obj.field1.slice(0,5));
+    info.RBC.splice(-1,0,obj.field2==null?0:obj.field2.slice(0,4));
+    info.Temp.splice(-1,0,obj.field5==null?0:obj.field5);
+    info.SpO2.splice(-1,0,obj.field4==null?0:obj.field4);
+    info.Date.push(dateTime.getDate() + '/' + (dateTime.getMonth() + 1)+ '/' + (dateTime.getFullYear()-2000));
     info.Time.push((dateTime.getHours()<10?'0':'') + dateTime.getHours() + ':' +(dateTime.getMinutes()<10?'0':'') +dateTime.getMinutes());
   }
   return info;

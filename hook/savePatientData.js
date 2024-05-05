@@ -17,6 +17,14 @@ const deleteKeys = () => {
   console.log("All keys deleted");
 }
 
+const cleanVitalObj = (vitalObj) => {
+  const keysToBeFixed = ['Date', 'Hb', 'Hr', 'RBC', 'SpO2', 'Temp', 'Time'];
+  for (let key in vitalObj) {
+    if (!keysToBeFixed.includes(key)) continue;
+    vitalObj[key] = vitalObj[key].split(',');
+  }
+}
+
 const fetchList = async (query, patientId) => {
   let response;
   const filter = {
@@ -40,7 +48,7 @@ const fetchList = async (query, patientId) => {
 
 const saveThisShit = (user, sympObjList, medObjList, vitalObjList) => {
   storage.set('dates', user.dates);
-  storage.set('hashes', user.hashes);
+  storage.set('hashes', user.hashes??'');
   storage.set('patientId', user.userId);
   const dateArray = user.dates.split(',');
   const hashesArray = user.dates.split(',');
@@ -52,6 +60,7 @@ const saveThisShit = (user, sympObjList, medObjList, vitalObjList) => {
     else parentObj[sympObj.date].sympObjList = [sympObj];
   }
   for(let vitalObj of vitalObjList) {
+    cleanVitalObj(vitalObj);
     if (parentObj[vitalObj.date].vitalObjList) parentObj[vitalObj.date].vitalObjList.push(vitalObj);
     else parentObj[vitalObj.date].vitalObjList = [vitalObj];
   }
@@ -76,8 +85,8 @@ const savePatientData = (patientId) => {
           deleteKeys();
           saveThisShit(user, sympObjList, medObjList, vitalObjList);
         })
-      })
-    })
+      }).catch((err) => console.log(err));
+    }).catch((err) => console.log(err));
   }).catch((err) => console.log(err));
 }
 

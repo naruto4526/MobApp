@@ -56,8 +56,10 @@ const Meds = ({medNames, navigation, selectedMap, selectedMed,setSelectedMed,set
 
 const VitalDetail = ({vitalObj}) => {
   let vitalValuePairs = [];
+  const keysToBeFixed = ['Date', 'Hb', 'Hr', 'RBC', 'SpO2', 'Temp', 'Time'];
   for(const key in vitalObj) {
     let temp = [key, vitalObj[key]];
+    if (!keysToBeFixed.includes(key)) continue;
     if(key === 'Date' || key === 'Time' || key === 'date')continue;
     vitalValuePairs.push(temp);
   }

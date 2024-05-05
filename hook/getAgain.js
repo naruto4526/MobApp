@@ -41,7 +41,7 @@ const getAgain = (interval) => {
 }
 
 const doStuff = async (number) => {
-  const response = await fetch(`https://api.thingspeak.com/channels/2125743/feeds.json?api_key=4L15DSU8CJBHK2UG&results=${number}`);
+  const response = await fetch(`https://api.thingspeak.com/channels/2493014/feeds.json?api_key=APB58CYRN8H4CTIB&results=${number}`);
   const data = await response.json();
   
   for(let obj of data.feeds) {
@@ -60,15 +60,15 @@ const doStuff = async (number) => {
       date : dateString
     }
 
-    info.Hr.splice(-1,0,obj.field4==null?0:obj.field4);
-    info.Hb.splice(-1,0,obj.field6==null?0:obj.field6.slice(0,5));
-    info.RBC.splice(-1,0,obj.field7==null?0:obj.field7.slice(0,4));
-    info.Temp.splice(-1,0,obj.field8==null?0:obj.field8);
-    info.SpO2.splice(-1,0,obj.field5==null?0:obj.field5);
+    info.Hr.splice(-1,0,obj.field3==null?0:obj.field3);
+    info.Hb.splice(-1,0,obj.field1==null?0:obj.field1.slice(0,5));
+    info.RBC.splice(-1,0,obj.field2==null?0:obj.field2.slice(0,4));
+    info.Temp.splice(-1,0,obj.field5==null?0:obj.field5);
+    info.SpO2.splice(-1,0,obj.field4==null?0:obj.field4);
     info.Date.push(dateTime.getDate() + '/' + (dateTime.getMonth() + 1)+ '/' + (dateTime.getFullYear()-2000));
     const timeB = (dateTime.getHours()<10?'0':'') + dateTime.getHours() + ':' +(dateTime.getMinutes()<10?'0':'') +dateTime.getMinutes();
     info.Time.push(timeB);
-
+    console.log(info);
     let dates = storage.getString('dates');
     if(dates && dates.includes(dateString) && storage.contains(dateString)) {
       dateObj = JSON.parse(storage.getString(dateString));
@@ -102,9 +102,9 @@ const doStuff = async (number) => {
 
 const doStuff2 = async () => {
   try {
-    const response = await fetch(`https://api.thingspeak.com/channels/2248859/feeds.json?api_key=QXG4M1BJRUAIKNZL&results=1`);
+    const response = await fetch(`https://api.thingspeak.com/channels/2490891/feeds.json?api_key=GCYJ0TPEZGNGXJ2G&results=1`);
     const data = await response.json();
-    const stepCount = data.feeds[0].field2;
+    const stepCount = data.feeds[0].field1;
     const entryId = data.feeds[0].entry_id;
     const createdAt = data.feeds[0].created_at;
     const stepCountObj = {
@@ -122,7 +122,7 @@ const doStuff2 = async () => {
       else console.log('no new data');
     } else {
       console.log('added2');
-      storage.set('stepCount', JSON.stringify(stepCountObj));
+      storage.set('stepCount', JSON.stringify(stepCountObj));``
     }
   } catch (err) {
     console.log('error is here' + err);
