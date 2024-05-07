@@ -3,6 +3,7 @@ import { storage } from "./useStore";
 import { createVitalObj, updateUser } from "../src/graphql/mutations";
 import { generateClient } from 'aws-amplify/api';
 import { updateDate } from "../components/symptoms/Modals/sympModal";
+import { IP } from "../constants";
 const client = generateClient();
 
 const saveVitals = async (vitalObj) => {
@@ -27,21 +28,22 @@ const saveVitals = async (vitalObj) => {
     console.log(response);
   }
 }
-const getAgain = (interval) => {
+const getAgain = (interval, navigation) => {
   timeout.clearAllTimeouts();
   doStuff(1).then(() => {
     doStuff2().then(() => {
-    timeout.setTimeout(() => {getAgain(interval)}, interval);
+      doStuff3(navigation).then(() => {
+        timeout.setTimeout(() => {getAgain(interval, navigation)}, interval);
+      })
     });
   }).catch((err) => {
-    console.log('error is here' + err);
-    //maybe make call to function again. Lets see.
-  });
- 
+      console.log('error is here' + err);
+      //maybe make call to function again. Lets see.
+  })
 }
 
 const doStuff = async (number) => {
-  const response = await fetch(`https://api.thingspeak.com/channels/2493014/feeds.json?api_key=APB58CYRN8H4CTIB&results=${number}`);
+  const response = await fetch(IP + '/vitals');
   const data = await response.json();
   
   for(let obj of data.feeds) {
@@ -102,7 +104,7 @@ const doStuff = async (number) => {
 
 const doStuff2 = async () => {
   try {
-    const response = await fetch(`https://api.thingspeak.com/channels/2490891/feeds.json?api_key=GCYJ0TPEZGNGXJ2G&results=1`);
+    const response = await fetch(IP + '/steps');
     const data = await response.json();
     const stepCount = data.feeds[0].field1;
     const entryId = data.feeds[0].entry_id;
@@ -130,6 +132,27 @@ const doStuff2 = async () => {
 
 }
 
+const doStuff3 = async (navigation) => {
+  try {
+    const response = await fetch(IP + '/fall');
+    const data = await response.json();
+    if (!storage.contains('fallId')) {
+      console.log("First fall!!");
+      storage.set('fallId', data.id.toString());
+      navigation.navigate('FallScreen');
+    } else if (parseInt(storage.getString('fallId')) === data.id) {
+      return;
+    } else {
+      console.log(storage.getString('fallId'));
+      console.log(data.id.toString());
+      storage.set('fallId', data.id.toString());
+      console.log("New fall!!");
+      navigation.navigate('FallScreen');
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
 const compareTimes = (timeA, timeB) => {
   console.log(timeA + ' ' + timeB);
   timeA = timeA.split(':');

@@ -2,9 +2,10 @@ import React,{useState,useEffect} from 'react';
 import {View,Text,TouchableOpacity,ActivityIndicator} from 'react-native';
 import { COLORS } from '../../constants';
 import { Display } from '../display/Display';
+import { IP } from '../../constants';
 
 const getData = async (number) => {
-  const response = await fetch(`https://api.thingspeak.com/channels/2493014/feeds.json?api_key=APB58CYRN8H4CTIB&results=${number}`);
+  const response = await fetch(IP + '/vitals/list');
   //${number}
   const data = await response.json();
   let info = {

@@ -52,4 +52,6 @@ const SHADOWS = {
   },
 };
 
-export {FONTS,COLORS,SHADOWS,SIZES}; //no semicolon when directly exporting a function or class definition.
+const IP = 'http://192.168.43.27:8080';
+
+export {FONTS,COLORS,SHADOWS,SIZES, IP}; //no semicolon when directly exporting a function or class definition.

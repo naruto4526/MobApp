@@ -9,4 +9,6 @@ export {NewReminder} from './reminders/newReminder/NewReminder.jsx'
 export {Meds,VitalDetail,SymptomDetail} from './symptoms/details/Details.jsx';
 export {Settings} from './settingsView/Setting.jsx';
 export {Resources} from './resources/Resources.jsx';
-export {Notes} from './notes/notes.jsx'
+export {Notes} from './notes/notes.jsx';
+export {Debug} from './debug/Debug.jsx';
+export {FallScreen} from './fallScreen/fallScreen.jsx';

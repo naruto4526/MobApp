@@ -5,7 +5,7 @@ import {Card} from '../cards/card';
 import { getAgain } from '../../hook/getAgain';
 import { timeout } from '../../hook/timeout';
 
-const data = ["Vitals","Reminders","Track Symptoms","Step Count", "Notes", "Settings"];
+const data = ["Vitals","Reminders","Track Symptoms","Step Count", "Notes", "Settings", "Debug"];
 const imageMap = new Map();
 imageMap.set('Vitals',require('../../assets/vitals.png'));
 imageMap.set('Settings', require('../../assets/settings.jpg'));
@@ -20,7 +20,7 @@ const Home = ({navigation}) => {
   //   console.log();
   //   getAgain(3000);
   // }, []);
-
+  
   return(
     <ScrollView contentContainerStyle = {styles.cardsContainer}>
      

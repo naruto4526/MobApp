@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {Home,Vitals,Reminders,Symptoms,StepCount,NewReminder,Settings,Resources, Notes} from '../components';
+import {Home,Vitals,Reminders,Symptoms,StepCount,NewReminder,Settings,Resources, Notes, Debug, FallScreen} from '../components';
 import { storage } from '../hook/useStore';
 import 'react-native-get-random-values';
 import {v4 as uuid} from 'uuid';
@@ -26,6 +26,8 @@ function App() {
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Notes" component={Notes} />
         <Stack.Screen name="Resources" component={Resources} />
+        <Stack.Screen name="Debug" component={Debug} />
+        <Stack.Screen name="FallScreen" component={FallScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
